@@ -47,7 +47,7 @@ export default function Login() {
 
 
 
-            // ...
+
             <div className="card" style={{
                 width: '100%',
                 maxWidth: '440px',
