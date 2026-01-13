@@ -41,7 +41,6 @@ export default function Layout() {
             }}>
 
 
-                // In Layout component...
                 {/* Logo Area */}
                 <div style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem', justifyContent: collapsed ? 'center' : 'flex-start' }}>
                     <img src={logo} alt="Maestro Logo" style={{ width: '32px', height: '32px', borderRadius: '4px' }} />
