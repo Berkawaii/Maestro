@@ -58,39 +58,39 @@ export default function Dashboard() {
                     {t('welcome')}, {user?.fullName?.split(' ')[0]}!
                 </h1>
                 <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>
-                    Here's what's happening with your projects today.
+                    {t('dashboardSubtitle')}
                 </p>
             </div>
 
             {/* Stats Grid */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
                 <StatCard
-                    title="Total Projects"
+                    title={t('totalProjects')}
                     value={stats.totalProjects}
                     icon="🚀"
                     color="blue"
-                    trend="+12% from last month"
+                    trend={`+12% ${t('loading').replace('...', '')}`} // Placeholder logic
                 />
                 <StatCard
-                    title="Active Tickets"
+                    title={t('activeTickets')}
                     value={stats.totalTickets}
                     icon="🎫"
                     color="purple"
-                    trend="+5 new today"
+                    trend={`+5 ${t('newToday')}`}
                 />
                 <StatCard
-                    title="Pending Tasks"
+                    title={t('pendingTasks')}
                     value={stats.pendingTickets}
                     icon="⏳"
                     color="orange"
-                    trend="Requires attention"
+                    trend={t('requiresAttention')}
                 />
                 <StatCard
-                    title="Completed"
+                    title={t('completed')}
                     value={stats.completedTickets}
                     icon="✅"
                     color="green"
-                    trend="+8 this week"
+                    trend={`+8 ${t('thisWeek')}`}
                 />
             </div>
 
@@ -100,7 +100,7 @@ export default function Dashboard() {
                 {/* Visual Chart Area (Mocked for aesthetics) */}
                 <div className="card" style={{ minHeight: '400px', display: 'flex', flexDirection: 'column' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                        <h3 style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--text-main)' }}>Sprint Velocity</h3>
+                        <h3 style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--text-main)' }}>{t('sprintVelocity')}</h3>
                         <select className="input-field" style={{ width: 'auto', padding: '0.4rem' }}>
                             <option>Last 30 Days</option>
                             <option>Last 6 Months</option>
@@ -120,28 +120,28 @@ export default function Dashboard() {
                 {/* Quick Actions & Recent */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
                     <div className="card">
-                        <h3 style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--text-main)', marginBottom: '1.5rem' }}>Quick Actions</h3>
+                        <h3 style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--text-main)', marginBottom: '1.5rem' }}>{t('quickActions')}</h3>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                             <Link to="/projects" className="btn" style={{ justifyContent: 'flex-start', background: 'var(--bg-main)', border: '1px solid var(--border-color)', color: 'var(--text-main)' }}>
-                                <span style={{ marginRight: '0.75rem' }}>📂</span> Create New Project
+                                <span style={{ marginRight: '0.75rem' }}>📂</span> {t('createProject')}
                             </Link>
                             <Link to="/tickets" className="btn" style={{ justifyContent: 'flex-start', background: 'var(--bg-main)', border: '1px solid var(--border-color)', color: 'var(--text-main)' }}>
-                                <span style={{ marginRight: '0.75rem' }}>🎫</span> Create New Ticket
+                                <span style={{ marginRight: '0.75rem' }}>🎫</span> {t('createTicket')}
                             </Link>
                             <button className="btn" style={{ justifyContent: 'flex-start', background: 'var(--bg-main)', border: '1px solid var(--border-color)', color: 'var(--text-main)' }}>
-                                <span style={{ marginRight: '0.75rem' }}>👥</span> Manage Team
+                                <span style={{ marginRight: '0.75rem' }}>👥</span> {t('manageTeam')}
                             </button>
                         </div>
                     </div>
 
                     <div className="card" style={{ flex: 1 }}>
-                        <h3 style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--text-main)', marginBottom: '1rem' }}>System Status</h3>
+                        <h3 style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--text-main)', marginBottom: '1rem' }}>{t('systemStatus')}</h3>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
                             <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 10px #22c55e' }}></div>
-                            <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>All systems operational</span>
+                            <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>{t('operational')}</span>
                         </div>
                         <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                            Last check: Just now
+                            {t('lastCheck')}
                         </div>
                     </div>
                 </div>
