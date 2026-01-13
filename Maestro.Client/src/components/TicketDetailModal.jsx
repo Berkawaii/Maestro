@@ -13,6 +13,9 @@ export default function TicketDetailModal({ ticketId, onClose, onUpdate }) {
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState('');
 
+    const user = JSON.parse(localStorage.getItem('user'));
+    const isRequester = user?.roles?.includes('Requester');
+
     useEffect(() => {
         if (ticketId) {
             setLoading(true);
@@ -177,6 +180,7 @@ export default function TicketDetailModal({ ticketId, onClose, onUpdate }) {
                             <div style={{ marginBottom: '1.5rem' }}>
                                 <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.5rem', fontWeight: '600' }}>{t('status')}</label>
                                 <select
+                                    disabled={isRequester}
                                     className="input-field"
                                     value={ticket.statusId || ''}
                                     onChange={e => handleSave({ statusId: parseInt(e.target.value) })}
@@ -188,6 +192,7 @@ export default function TicketDetailModal({ ticketId, onClose, onUpdate }) {
                             <div style={{ marginBottom: '1.5rem' }}>
                                 <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.5rem', fontWeight: '600' }}>{t('assignee')}</label>
                                 <select
+                                    disabled={isRequester}
                                     className="input-field"
                                     value={ticket.assigneeId || ''}
                                     onChange={e => {
