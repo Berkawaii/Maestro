@@ -1,6 +1,7 @@
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { useState } from 'react';
+import logo from '../assets/logo.png';
 
 // Icons
 const ChevronLeft = () => <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>;
@@ -38,8 +39,7 @@ export default function Layout() {
                 transition: 'width var(--transition-speed)',
                 overflow: 'hidden'
             }}>
-                import logo from '../assets/logo.png';
-                // ... (keep usage of useApp etc)
+
 
                 // In Layout component...
                 {/* Logo Area */}

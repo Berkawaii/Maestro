@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../api';
 import { useApp } from '../context/AppContext';
+import logo from '../assets/logo.png';
 
 export default function Register() {
     const navigate = useNavigate();
@@ -46,7 +47,7 @@ export default function Register() {
                 background: '#7c3aed', opacity: '0.15', filter: 'blur(120px)', borderRadius: '50%'
             }}></div>
 
-            import logo from '../assets/logo.png';
+
 
             // ...
             <div className="card" style={{

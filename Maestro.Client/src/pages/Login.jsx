@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../api';
+import logo from '../assets/logo.png';
 
 export default function Login() {
     const [email, setEmail] = useState('');
@@ -44,7 +45,7 @@ export default function Login() {
                 background: '#7c3aed', opacity: '0.15', filter: 'blur(120px)', borderRadius: '50%'
             }}></div>
 
-            import logo from '../assets/logo.png';
+
 
             // ...
             <div className="card" style={{
