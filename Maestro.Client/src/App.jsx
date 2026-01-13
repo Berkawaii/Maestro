@@ -27,7 +27,13 @@ function ProtectedRoute({ children }) {
 }
 
 
-
+function HomeRedirect() {
+  const user = JSON.parse(localStorage.getItem('user'));
+  if (user?.roles?.includes('Requester')) {
+    return <Navigate to="/tickets" replace />;
+  }
+  return <Dashboard />;
+}
 function App() {
   return (
     <Routes>
@@ -35,7 +41,7 @@ function App() {
       <Route path="/register" element={<Register />} />
 
       <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-        <Route index element={<Dashboard />} />
+        <Route index element={<HomeRedirect />} />
         <Route path="projects" element={<Projects />} />
 
         <Route path="project/:projectId" element={<ProjectLayout />}>

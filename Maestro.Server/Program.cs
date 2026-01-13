@@ -102,7 +102,7 @@ using (var scope = app.Services.CreateScope())
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-    var roles = new[] { "Admin", "User", "Support", "SupportAdmin" };
+    var roles = new[] { "Admin", "User", "Support", "SupportAdmin", "Requester" };
     foreach (var role in roles)
     {
         if (!await roleManager.RoleExistsAsync(role))

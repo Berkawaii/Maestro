@@ -68,44 +68,85 @@ namespace DuzeyYardimSistemi.Server.Controllers
             var user = await _context.Users.FindAsync(userId);
             var isAdmin = User.IsInRole("Admin") || User.IsInRole("SupportAdmin");
             var isSupport = User.IsInRole("Support");
+            var isRequester = User.IsInRole("Requester");
 
+            // Base query
             var query = _context.Tickets
                 .Include(t => t.Project)
+                    .ThenInclude(p => p.Members) // Include members to check access
                 .Include(t => t.Status)
                 .Include(t => t.Assignee)
                 .Include(t => t.Reporter)
                 .Include(t => t.Sprint)
                 .Include(t => t.Parent)
-                .Where(t => t.Type != TicketType.Story && t.Type != TicketType.Epic) // Filter out project management issues
                 .AsQueryable();
 
             if (projectId.HasValue)
             {
+                // PROJECT CONTEXT
                 query = query.Where(t => t.ProjectId == projectId.Value);
-            }
 
-            // RBAC Logic
-            if (isAdmin)
-            {
-                // Sees everything
-            }
-            else if (isSupport)
-            {
-                // Support sees tickets in their department OR tickets they reported/assigned
-                if (!string.IsNullOrEmpty(user?.Department))
+                // Access Control for Project
+                if (!isAdmin)
                 {
-                    query = query.Where(t => t.Category == user.Department || t.ReporterId == userId || t.AssigneeId == userId);
+                   // If in project context, check if user is member
+                   // Note: This logic assumes if you query a project, you want to see all tickets if you are a member
+                   // However, for Requester, they might not be allowed to see others' tickets even in a project?
+                   
+                   if (isRequester) 
+                   {
+                        // Requesters only see their own tickets, even in a project (if they ever access one)
+                        query = query.Where(t => t.ReporterId == userId);
+                   }
+                   else 
+                   {
+                        // "User" or "Support"
+                        // Rule: "plain users should see all issues in projects they are added to"
+                        // We need to verify membership. 
+                        // Since we can't easily filter by "Parent Project Members contains Me" in a simple where clause without join,
+                        // we'll check membership first or use a subquery.
+                        
+                        // Optimized: Check membership logic.
+                        // Assuming the user submitting the request is the one logged in.
+                        // If the user is a member of the project, they see ALL tickets (no reporter filter).
+                        // If NOT a member, they see nothing (or forbid).
+                        
+                        // For a clean query, let's filter:
+                        query = query.Where(t => t.Project.Members.Any(m => m.Id == userId));
+                   }
                 }
-                else
+            }
+            else
+            {
+                // GLOBAL CONTEXT (Dashboard / My Tickets)
+                // Filter out Project management issues (Stories, Epics) for the global help desk view
+                query = query.Where(t => t.Type != TicketType.Story && t.Type != TicketType.Epic);
+
+                if (isAdmin)
                 {
-                    // Fallback if no department set: see only own
+                    // Sees everything
+                }
+                else if (isSupport)
+                {
+                    if (!string.IsNullOrEmpty(user?.Department))
+                    {
+                        query = query.Where(t => t.Category == user.Department || t.ReporterId == userId || t.AssigneeId == userId);
+                    }
+                    else
+                    {
+                        query = query.Where(t => t.ReporterId == userId || t.AssigneeId == userId);
+                    }
+                }
+                else if (isRequester)
+                {
+                     // Requester sees ONLY own tickets
+                     query = query.Where(t => t.ReporterId == userId);
+                }
+                else // Standard User
+                {
+                    // Standard User in Global View: Sees own tickets + Assigned tickets
                     query = query.Where(t => t.ReporterId == userId || t.AssigneeId == userId);
                 }
-            }
-            else // Standard User
-            {
-                // Sees only created by them or assigned to them
-                query = query.Where(t => t.ReporterId == userId || t.AssigneeId == userId);
             }
 
             var tickets = await query

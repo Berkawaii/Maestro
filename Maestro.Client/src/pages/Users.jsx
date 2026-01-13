@@ -10,7 +10,7 @@ export default function Users() {
 
     // Mock data for categories/departments - REPLACED WITH DYNAMIC
     const [departments, setDepartments] = useState([]);
-    const ROLES = ["Admin", "Support", "SupportAdmin", "User"];
+    const ROLES = ["Admin", "Support", "SupportAdmin", "User", "Requester"];
 
     useEffect(() => {
         fetchUsers();
@@ -139,6 +139,7 @@ function UserRow({ user, departments, onUpdate }) {
                         <option value="Support">Support</option>
                         <option value="SupportAdmin">SupportAdmin</option>
                         <option value="Admin">Admin</option>
+                        <option value="Requester">Requester</option>
                     </select>
                 </td>
                 <td style={{ padding: '1rem' }}>

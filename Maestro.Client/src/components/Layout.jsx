@@ -56,8 +56,12 @@ export default function Layout() {
 
                 {/* Navigation */}
                 <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', padding: '0 1rem', marginTop: '1rem' }}>
-                    <NavItem to="/" icon={<DashboardIcon />} label={t('dashboard')} active={isActive('/')} collapsed={collapsed} />
-                    <NavItem to="/projects" icon={<ProjectsIcon />} label={t('projects')} active={isActive('/projects')} collapsed={collapsed} />
+                    {!user?.roles?.includes('Requester') && (
+                        <>
+                            <NavItem to="/" icon={<DashboardIcon />} label={t('dashboard')} active={isActive('/')} collapsed={collapsed} />
+                            <NavItem to="/projects" icon={<ProjectsIcon />} label={t('projects')} active={isActive('/projects')} collapsed={collapsed} />
+                        </>
+                    )}
                     <NavItem to="/tickets" icon={<TicketsIcon />} label={t('tickets')} active={isActive('/tickets')} collapsed={collapsed} />
 
                     {/* Admin Only */}
