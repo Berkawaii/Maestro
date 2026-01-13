@@ -2,7 +2,7 @@
 
 **Maestro** is a modern, premium **Agile Project Management** and **Help Desk** solution designed to streamline workflows with style and efficiency. built with .NET 8 and React (Vite).
 
-![Maestro Dashboard](assets/dashboard-preview.png)
+![Maestro Demo](assets/maestro.gif)
 
 ## ✨ Features
 
