@@ -8,6 +8,10 @@ import Backlog from './pages/Backlog';
 import Board from './pages/Board';
 import Reports from './pages/Reports';
 import Dashboard from './pages/Dashboard';
+import Tickets from './pages/Tickets';
+import Users from './pages/Users';
+import Roles from './pages/Roles';
+import Departments from './pages/Departments';
 
 <Route path="project/:projectId" element={<ProjectLayout />}>
   <Route path="backlog" element={<Backlog />} />
@@ -40,7 +44,10 @@ function App() {
           <Route path="reports" element={<Reports />} />
         </Route>
 
-        <Route path="tickets" element={<div>Tickets Page Placeholder</div>} />
+        <Route path="tickets" element={<Tickets />} />
+        <Route path="users" element={<Users />} />
+        <Route path="roles" element={<Roles />} />
+        <Route path="departments" element={<Departments />} />
       </Route>
     </Routes>
   );

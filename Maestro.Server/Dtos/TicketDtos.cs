@@ -14,6 +14,8 @@ namespace DuzeyYardimSistemi.Server.Dtos
         public TicketPriority Priority { get; set; }
         public TicketType Type { get; set; } = TicketType.Task;
         public int? StoryPoints { get; set; }
+        public string? Label { get; set; }
+        public string? Category { get; set; }
         
         [Required]
         public int ProjectId { get; set; }
@@ -36,6 +38,7 @@ namespace DuzeyYardimSistemi.Server.Dtos
         public int? ParentId { get; set; }
         public string? AssigneeId { get; set; }
         public DateTime? DueDate { get; set; }
+        public string? Category { get; set; }
     }
 
     public class TicketDto
@@ -47,6 +50,7 @@ namespace DuzeyYardimSistemi.Server.Dtos
         public TicketType Type { get; set; }
         public int? StoryPoints { get; set; }
         public string? Label { get; set; }
+        public string? Category { get; set; }
         
         public DateTime CreatedAt { get; set; }
         public DateTime? DueDate { get; set; }

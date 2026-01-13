@@ -12,6 +12,8 @@ namespace DuzeyYardimSistemi.Server.Models
         // FullName helper
         public string FullName => $"{FirstName} {LastName}";
         
+        public string? Department { get; set; } // Matches Ticket.Category for Support staff
+        
         public ICollection<Project> Projects { get; set; } = new List<Project>();
     }
 }

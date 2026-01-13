@@ -15,6 +15,12 @@ export default function CreateTicketModal({ projectId, onClose, onCreated, sprin
     // We could fetch users here to assign
     const [users, setUsers] = useState([]);
     const [epics, setEpics] = useState([]);
+    const [departments, setDepartments] = useState([]);
+
+    useEffect(() => {
+        // Fetch Departments
+        api.get('/department').then(res => setDepartments(res.data)).catch(err => console.error(err));
+    }, []);
 
     useEffect(() => {
         if (projectId) {
@@ -55,12 +61,12 @@ export default function CreateTicketModal({ projectId, onClose, onCreated, sprin
             zIndex: 1000
         }}>
             <div className="card" style={{ width: '600px', maxHeight: '90vh', overflowY: 'auto' }}>
-                <h2 style={{ marginBottom: '1.5rem' }}>Create Issue</h2>
+                <h2 style={{ marginBottom: '1.5rem' }}>Yeni Talep Oluştur</h2>
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
 
                     {/* Title */}
                     <div>
-                        <label>Summary *</label>
+                        <label>Konu / Özet *</label>
                         <input required className="input-field"
                             value={ticket.title} onChange={e => setTicket({ ...ticket, title: e.target.value })}
                             placeholder="What needs to be done?"
@@ -69,7 +75,7 @@ export default function CreateTicketModal({ projectId, onClose, onCreated, sprin
 
                     {/* Description */}
                     <div>
-                        <label>Description</label>
+                        <label>Açıklama</label>
                         <textarea className="input-field" rows={4}
                             value={ticket.description} onChange={e => setTicket({ ...ticket, description: e.target.value })}
                         />
@@ -78,76 +84,54 @@ export default function CreateTicketModal({ projectId, onClose, onCreated, sprin
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                         {/* Type */}
                         <div>
-                            <label>Issue Type</label>
+                            <label>Talep Tipi</label>
                             <select className="input-field"
                                 value={ticket.type} onChange={e => setTicket({ ...ticket, type: parseInt(e.target.value) })}
                             >
-                                <option value={0}>Story</option>
-                                <option value={1}>Task</option>
-                                <option value={2}>Bug</option>
-                                <option value={3}>Epic</option>
+                                <option value={1}>İstek / Talep</option>
+                                <option value={2}>Hata / Arıza</option>
+                                <option value={0}>Diğer</option>
                             </select>
                         </div>
 
                         {/* Priority */}
                         <div>
-                            <label>Priority</label>
+                            <label>Öncelik</label>
                             <select className="input-field"
                                 value={ticket.priority} onChange={e => setTicket({ ...ticket, priority: parseInt(e.target.value) })}
                             >
-                                <option value={0}>Low</option>
-                                <option value={1}>Medium</option>
-                                <option value={2}>High</option>
-                                <option value={3}>Critical</option>
+                                <option value={0}>Düşük</option>
+                                <option value={1}>Orta</option>
+                                <option value={2}>Yüksek</option>
+                                <option value={3}>Kritik</option>
                             </select>
                         </div>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                        {/* Sprint */}
-                        <div>
-                            <label>Sprint</label>
-                            <select className="input-field"
-                                value={ticket.sprintId} onChange={e => setTicket({ ...ticket, sprintId: e.target.value })}
-                            >
-                                <option value="">Backlog (No Sprint)</option>
-                                {sprints.map(s => (
-                                    <option key={s.id} value={s.id}>{s.name} {s.isActive ? '(Active)' : ''}</option>
-                                ))}
-                            </select>
-                        </div>
 
-                        {/* Story Points */}
-                        <div>
-                            <label>Story Points</label>
-                            <input type="number" className="input-field"
-                                value={ticket.storyPoints} onChange={e => setTicket({ ...ticket, storyPoints: e.target.value })}
-                            />
-                        </div>
-                    </div>
 
-                    {/* Assignee */}
+                    {/* Category */}
                     <div>
-                        <label>Assignee</label>
+                        <label>Kategori (Destek Alanı)</label>
                         <select className="input-field"
-                            value={ticket.assigneeId || ''} onChange={e => setTicket({ ...ticket, assigneeId: e.target.value })}
+                            value={ticket.category || ''} onChange={e => setTicket({ ...ticket, category: e.target.value })}
                         >
-                            <option value="">Unassigned</option>
-                            {users.map(u => (
-                                <option key={u.id} value={u.id}>{u.fullName}</option>
+                            <option value="">Seçiniz...</option>
+                            {departments.map(d => (
+                                <option key={d.id} value={d.name}>{d.name}</option>
                             ))}
                         </select>
                     </div>
 
-                    {/* Epic Link */}
+                    {/* Assignee */}
                     <div>
-                        <label>Epic Link (Optional)</label>
+                        <label>Atanan Kişi (Opsiyonel)</label>
                         <select className="input-field"
-                            value={ticket.parentId || ''} onChange={e => setTicket({ ...ticket, parentId: e.target.value || null })}
+                            value={ticket.assigneeId || ''} onChange={e => setTicket({ ...ticket, assigneeId: e.target.value })}
                         >
-                            <option value="">No Epic</option>
-                            {epics.map(epic => (
-                                <option key={epic.id} value={epic.id}>{epic.title}</option>
+                            <option value="">Atanmadı</option>
+                            {users.map(u => (
+                                <option key={u.id} value={u.id}>{u.fullName}</option>
                             ))}
                         </select>
                     </div>

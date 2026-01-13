@@ -54,7 +54,10 @@ const translations = {
         manageTeam: "Ekibi Yönet",
         systemStatus: "Sistem Durumu",
         operational: "Tüm sistemler çalışıyor",
-        lastCheck: "Son kontrol: Az önce"
+        lastCheck: "Son kontrol: Az önce",
+        users: "Kullanıcılar",
+        userManagement: "Kullanıcı Yönetimi",
+        category: "Kategori"
     },
     en: {
         dashboard: "Dashboard",
@@ -63,6 +66,7 @@ const translations = {
         board: "Board",
         reports: "Reports",
         tickets: "Tickets",
+        users: "Users",
         login: "Login",
         logout: "Logout",
         settings: "Settings",
@@ -105,7 +109,9 @@ const translations = {
         manageTeam: "Manage Team",
         systemStatus: "System Status",
         operational: "All systems operational",
-        lastCheck: "Last check: Just now"
+        lastCheck: "Last check: Just now",
+        userManagement: "User Management",
+        category: "Category"
     }
 };
 

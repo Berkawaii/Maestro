@@ -29,6 +29,7 @@ namespace DuzeyYardimSistemi.Server.Models
         public TicketType Type { get; set; } = TicketType.Task;
         public int? StoryPoints { get; set; }
         public string? Label { get; set; } // e.g. "MIGRATION", "SIPARIS"
+        public string? Category { get; set; } // e.g. "SAP SD", "Hardware", "Network"
         
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }

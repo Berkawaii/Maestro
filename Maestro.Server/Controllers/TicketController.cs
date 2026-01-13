@@ -64,6 +64,11 @@ namespace DuzeyYardimSistemi.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TicketDto>>> GetTickets([FromQuery] int? projectId)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _context.Users.FindAsync(userId);
+            var isAdmin = User.IsInRole("Admin") || User.IsInRole("SupportAdmin");
+            var isSupport = User.IsInRole("Support");
+
             var query = _context.Tickets
                 .Include(t => t.Project)
                 .Include(t => t.Status)
@@ -71,11 +76,36 @@ namespace DuzeyYardimSistemi.Server.Controllers
                 .Include(t => t.Reporter)
                 .Include(t => t.Sprint)
                 .Include(t => t.Parent)
+                .Where(t => t.Type != TicketType.Story && t.Type != TicketType.Epic) // Filter out project management issues
                 .AsQueryable();
 
             if (projectId.HasValue)
             {
                 query = query.Where(t => t.ProjectId == projectId.Value);
+            }
+
+            // RBAC Logic
+            if (isAdmin)
+            {
+                // Sees everything
+            }
+            else if (isSupport)
+            {
+                // Support sees tickets in their department OR tickets they reported/assigned
+                if (!string.IsNullOrEmpty(user?.Department))
+                {
+                    query = query.Where(t => t.Category == user.Department || t.ReporterId == userId || t.AssigneeId == userId);
+                }
+                else
+                {
+                    // Fallback if no department set: see only own
+                    query = query.Where(t => t.ReporterId == userId || t.AssigneeId == userId);
+                }
+            }
+            else // Standard User
+            {
+                // Sees only created by them or assigned to them
+                query = query.Where(t => t.ReporterId == userId || t.AssigneeId == userId);
             }
 
             var tickets = await query
@@ -88,6 +118,7 @@ namespace DuzeyYardimSistemi.Server.Controllers
                     Type = t.Type,
                     StoryPoints = t.StoryPoints,
                     Label = t.Label,
+                    Category = t.Category,
                     CreatedAt = t.CreatedAt,
                     DueDate = t.DueDate,
                     ProjectId = t.ProjectId,
@@ -107,6 +138,19 @@ namespace DuzeyYardimSistemi.Server.Controllers
                 .ToListAsync();
 
             return Ok(tickets);
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,SupportAdmin")] // Only admins can delete
+        public async Task<IActionResult> DeleteTicket(int id)
+        {
+            var ticket = await _context.Tickets.FindAsync(id);
+            if (ticket == null) return NotFound();
+
+            _context.Tickets.Remove(ticket);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
 
         [HttpPost]
@@ -133,6 +177,8 @@ namespace DuzeyYardimSistemi.Server.Controllers
                 StatusId = initialStatus?.Id, 
                 SprintId = dto.SprintId,
                 ParentId = dto.ParentId,
+                Label = dto.Label,
+                Category = dto.Category,
                 CreatedAt = DateTime.UtcNow,
                 DueDate = dto.DueDate
             };

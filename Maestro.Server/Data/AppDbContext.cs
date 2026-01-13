@@ -16,6 +16,7 @@ namespace DuzeyYardimSistemi.Server.Data
         public DbSet<Sprint> Sprints { get; set; }
         public DbSet<TicketComment> TicketComments { get; set; }
         public DbSet<TicketHistory> TicketHistories { get; set; }
+        public DbSet<Department> Departments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

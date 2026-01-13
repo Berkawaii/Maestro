@@ -102,7 +102,7 @@ using (var scope = app.Services.CreateScope())
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-    var roles = new[] { "Admin", "User", "Support" };
+    var roles = new[] { "Admin", "User", "Support", "SupportAdmin" };
     foreach (var role in roles)
     {
         if (!await roleManager.RoleExistsAsync(role))
@@ -111,23 +111,77 @@ using (var scope = app.Services.CreateScope())
         }
     }
 
-    // Seed Users
-    var usersToSeed = new[] {
-        new { Email = "analist@duzey.com", First = "Ahmet", Last = "Analist" },
-        new { Email = "dev1@duzey.com", First = "Mehmet", Last = "Developer" },
-        new { Email = "dev2@duzey.com", First = "Ayse", Last = "Developer" }
+    // 1. Seed Admin
+    var adminEmail = "admin@duzey.com";
+    if (await userManager.FindByEmailAsync(adminEmail) == null)
+    {
+        var admin = new AppUser { UserName = adminEmail, Email = adminEmail, FirstName = "System", LastName = "Admin", EmailConfirmed = true };
+        var result = await userManager.CreateAsync(admin, "Password123!");
+        if (result.Succeeded) await userManager.AddToRoleAsync(admin, "Admin");
+    }
+    else
+    {
+        // Ensure existing admin has Admin role
+        var admin = await userManager.FindByEmailAsync(adminEmail);
+        if (!await userManager.IsInRoleAsync(admin, "Admin"))
+        {
+            await userManager.AddToRoleAsync(admin, "Admin");
+        }
+    }
+
+    // 2. Seed Support Admin
+    var supportAdminEmail = "supportadmin@duzey.com";
+    if (await userManager.FindByEmailAsync(supportAdminEmail) == null)
+    {
+        var sa = new AppUser { UserName = supportAdminEmail, Email = supportAdminEmail, FirstName = "Support", LastName = "Lead", EmailConfirmed = true };
+        var result = await userManager.CreateAsync(sa, "Password123!");
+        if (result.Succeeded) await userManager.AddToRoleAsync(sa, "SupportAdmin");
+    }
+
+    // 3. Seed Support Users with Departments
+    var supportUsers = new[] {
+        new { Email = "sapsd@duzey.com", First = "Ali", Last = "SD", Dept = "SAP SD" },
+        new { Email = "sapfi@duzey.com", First = "Veli", Last = "FI", Dept = "SAP FI" },
+        new { Email = "sapewm@duzey.com", First = "Ayse", Last = "EWM", Dept = "SAP EWM" },
+        new { Email = "hardware@duzey.com", First = "Can", Last = "Donanim", Dept = "Hardware" },
+        new { Email = "network@duzey.com", First = "Mert", Last = "Ag", Dept = "Network" }
     };
 
-    foreach (var u in usersToSeed)
+    // Seed Departments
+    var departments = new[] { "SAP SD", "SAP FI", "SAP EWM", "Hardware", "Network", "Support", "Other" };
+    foreach (var d in departments)
+    {
+        if (!await dbContext.Departments.AnyAsync(x => x.Name == d))
+        {
+            dbContext.Departments.Add(new Department { Name = d });
+        }
+    }
+    await dbContext.SaveChangesAsync();
+
+    foreach (var u in supportUsers)
     {
         if (await userManager.FindByEmailAsync(u.Email) == null)
         {
-            var user = new AppUser { UserName = u.Email, Email = u.Email, FirstName = u.First, LastName = u.Last };
+            var user = new AppUser { UserName = u.Email, Email = u.Email, FirstName = u.First, LastName = u.Last, Department = u.Dept, EmailConfirmed = true };
             var result = await userManager.CreateAsync(user, "Password123!");
-            if (result.Succeeded)
-            {
-                await userManager.AddToRoleAsync(user, "User");
-            }
+            if (result.Succeeded) await userManager.AddToRoleAsync(user, "Support");
+        }
+    }
+
+    // 4. Seed Standard Users (Ticket Openers)
+    var standardUsers = new[] {
+        new { Email = "user1@duzey.com", First = "Zeynep", Last = "User" },
+        new { Email = "user2@duzey.com", First = "Burak", Last = "User" },
+        new { Email = "user3@duzey.com", First = "Selin", Last = "User" }
+    };
+
+    foreach (var u in standardUsers)
+    {
+        if (await userManager.FindByEmailAsync(u.Email) == null)
+        {
+            var user = new AppUser { UserName = u.Email, Email = u.Email, FirstName = u.First, LastName = u.Last, EmailConfirmed = true };
+            var result = await userManager.CreateAsync(user, "Password123!");
+            if (result.Succeeded) await userManager.AddToRoleAsync(user, "User");
         }
     }
 
