@@ -38,12 +38,13 @@ export default function Layout() {
                 transition: 'width var(--transition-speed)',
                 overflow: 'hidden'
             }}>
+                import logo from '../assets/logo.png';
+                // ... (keep usage of useApp etc)
+
+                // In Layout component...
                 {/* Logo Area */}
                 <div style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem', justifyContent: collapsed ? 'center' : 'flex-start' }}>
-                    <div style={{
-                        width: '32px', height: '32px', minWidth: '32px', background: 'var(--primary-color)', borderRadius: '8px',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold'
-                    }}>D</div>
+                    <img src={logo} alt="Maestro Logo" style={{ width: '32px', height: '32px', borderRadius: '4px' }} />
                     {!collapsed && (
                         <h2 style={{ fontSize: '1.4rem', fontWeight: '800', color: 'var(--text-main)', letterSpacing: '-0.5px', whiteSpace: 'nowrap' }}>
                             Maestro

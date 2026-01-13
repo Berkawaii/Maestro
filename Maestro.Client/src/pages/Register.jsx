@@ -46,6 +46,9 @@ export default function Register() {
                 background: '#7c3aed', opacity: '0.15', filter: 'blur(120px)', borderRadius: '50%'
             }}></div>
 
+            import logo from '../assets/logo.png';
+
+            // ...
             <div className="card" style={{
                 width: '100%',
                 maxWidth: '440px',
@@ -57,14 +60,10 @@ export default function Register() {
                 margin: '1rem'
             }}>
                 <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-                    <div style={{
-                        width: '56px', height: '56px', background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-                        borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        color: 'white', fontWeight: '800', fontSize: '1.8rem', margin: '0 auto 1rem auto',
-                        boxShadow: '0 10px 15px -3px rgba(59, 130, 246, 0.5)'
-                    }}>
-                        M
-                    </div>
+                    <img src={logo} alt="Maestro Logo" style={{
+                        width: '80px', height: '80px', margin: '0 auto 1rem auto', display: 'block',
+                        filter: 'drop-shadow(0 10px 15px rgba(59, 130, 246, 0.3))'
+                    }} />
                     <h2 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'white', marginBottom: '0.5rem' }}>
                         Create Account
                     </h2>

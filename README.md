@@ -1,4 +1,4 @@
-# Maestro 🚀
+# <img src="assets/logo.png" width="40" height="40" alt="Maestro Logo" style="vertical-align: middle;"> Maestro 🚀
 
 **Maestro** is a modern, premium **Agile Project Management** and **Help Desk** solution designed to streamline workflows with style and efficiency. built with .NET 8 and React (Vite).
 
