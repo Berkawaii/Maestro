@@ -19,9 +19,12 @@ export default function Tickets() {
 
     const [departments, setDepartments] = useState([]);
 
+    const [projects, setProjects] = useState([]);
+
     useEffect(() => {
         fetchTickets();
         api.get('/department').then(res => setDepartments(res.data)).catch(err => console.error(err));
+        api.get('/project').then(res => setProjects(res.data)).catch(err => console.error(err));
     }, []);
 
     useEffect(() => {
@@ -181,7 +184,8 @@ export default function Tickets() {
 
             {showCreateModal && (
                 <CreateTicketModal
-                    projectId={tickets[0]?.projectId || 1} // Fallback to 1 or make modal smarter
+                    projectId={projects.find(p => p.key === 'SUPPORT')?.id || projects.find(p => p.type === 1)?.id || projects[0]?.id || 1}
+                    mode="helpdesk"
                     onClose={() => setShowCreateModal(false)}
                     onCreated={() => {
                         setShowCreateModal(false);

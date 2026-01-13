@@ -34,6 +34,7 @@ namespace DuzeyYardimSistemi.Server.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DueDate { get; set; } // For SLA
+        public DateTime? ResolvedAt { get; set; }
 
         // Foreign Keys
         public int ProjectId { get; set; }

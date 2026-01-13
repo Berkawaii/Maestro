@@ -136,6 +136,11 @@ namespace DuzeyYardimSistemi.Server.Controllers
             var project = await _context.Projects.FindAsync(id);
             if (project == null) return NotFound();
 
+            if (project.Key == "SUPPORT")
+            {
+                return BadRequest("The 'Destek Talepleri' project cannot be deleted.");
+            }
+
             _context.Projects.Remove(project);
             await _context.SaveChangesAsync();
 

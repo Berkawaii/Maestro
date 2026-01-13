@@ -17,6 +17,8 @@ namespace DuzeyYardimSistemi.Server.Data
         public DbSet<TicketComment> TicketComments { get; set; }
         public DbSet<TicketHistory> TicketHistories { get; set; }
         public DbSet<Department> Departments { get; set; }
+        public DbSet<SlaPolicy> SlaPolicies { get; set; }
+        public DbSet<WorkingHourConfig> WorkingHourConfigs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

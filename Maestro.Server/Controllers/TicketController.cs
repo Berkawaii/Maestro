@@ -14,10 +14,12 @@ namespace DuzeyYardimSistemi.Server.Controllers
     public class TicketController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly DuzeyYardimSistemi.Server.Services.ISlaService _slaService;
 
-        public TicketController(AppDbContext context)
+        public TicketController(AppDbContext context, DuzeyYardimSistemi.Server.Services.ISlaService slaService)
         {
             _context = context;
+            _slaService = slaService;
         }
 
         [HttpGet("{id}")]
@@ -224,6 +226,18 @@ namespace DuzeyYardimSistemi.Server.Controllers
                 DueDate = dto.DueDate
             };
 
+            // SLA Calculation for SUPPORT Project
+            var project = await _context.Projects.FindAsync(dto.ProjectId);
+            if (project != null && project.Key == "SUPPORT")
+            {
+                // Calculate SLA
+                var dueDate = await _slaService.CalculateDueDateAsync(dto.Priority, ticket.CreatedAt);
+                if (dueDate.HasValue)
+                {
+                    ticket.DueDate = dueDate.Value;
+                }
+            }
+
             _context.Tickets.Add(ticket);
             await _context.SaveChangesAsync();
 
@@ -272,6 +286,17 @@ namespace DuzeyYardimSistemi.Server.Controllers
                 var newStatusObj = await _context.TicketStatuses.FindAsync(dto.StatusId);
                 await LogChange("Status", oldStatus, newStatusObj?.Name ?? dto.StatusId.ToString());
                 ticket.StatusId = dto.StatusId.Value;
+
+                // Check if new status is final (Resolved/Closed)
+                if (newStatusObj != null && (newStatusObj.IsFinal || newStatusObj.Name == "Resolved" || newStatusObj.Name == "Closed"))
+                {
+                    if (ticket.ResolvedAt == null) ticket.ResolvedAt = DateTime.UtcNow;
+                }
+                else
+                {
+                    // Reopened? Clear ResolvedAt
+                    ticket.ResolvedAt = null;
+                }
             }
             if (dto.Priority.HasValue)
             {

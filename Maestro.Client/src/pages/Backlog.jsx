@@ -198,6 +198,7 @@ export default function Backlog() {
                     <CreateTicketModal
                         projectId={projectId}
                         sprints={sprints}
+                        mode="project"
                         onClose={() => setShowCreateTicket(false)}
                         onCreated={() => { setShowCreateTicket(false); fetchData(); }}
                     />

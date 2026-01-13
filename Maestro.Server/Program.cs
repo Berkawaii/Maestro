@@ -44,6 +44,7 @@ builder.Services.AddAuthentication(options => {
 });
 
 builder.Services.AddScoped<DuzeyYardimSistemi.Server.Services.ITokenService, DuzeyYardimSistemi.Server.Services.TokenService>();
+builder.Services.AddScoped<DuzeyYardimSistemi.Server.Services.ISlaService, DuzeyYardimSistemi.Server.Services.SlaService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -197,6 +198,58 @@ using (var scope = app.Services.CreateScope())
                 firstProject.Members.Add(user);
             }
         }
+        await dbContext.SaveChangesAsync();
+    }
+
+    // Seed Help Desk Project (Support Project)
+    var supportProjectKey = "SUPPORT";
+    if (!await dbContext.Projects.AnyAsync(p => p.Key == supportProjectKey))
+    {
+        var helpDeskProject = new Project 
+        { 
+            Name = "Destek Talepleri", 
+            Key = supportProjectKey, 
+            Description = "Merkezi Yardım Masası ve Destek Talepleri",
+            Type = ProjectType.HelpDesk,
+            CreatedAt = DateTime.UtcNow
+        };
+        
+        // Add all existing users to this project so they can see/create tickets
+        var allUsers = await userManager.Users.ToListAsync();
+        foreach (var user in allUsers)
+        {
+            helpDeskProject.Members.Add(user);
+        }
+
+        dbContext.Projects.Add(helpDeskProject);
+        await dbContext.SaveChangesAsync();
+
+        // Add default statuses for Help Desk
+         dbContext.TicketStatuses.AddRange(
+            new TicketStatus { Name = "New", ProjectId = helpDeskProject.Id, Order = 1, IsInitial = true },
+            new TicketStatus { Name = "In Progress", ProjectId = helpDeskProject.Id, Order = 2 },
+            new TicketStatus { Name = "Resolved", ProjectId = helpDeskProject.Id, Order = 3 },
+            new TicketStatus { Name = "Closed", ProjectId = helpDeskProject.Id, Order = 4, IsFinal = true }
+        );
+        await dbContext.SaveChangesAsync();
+    }
+
+    // Seed SLA & Working Hours
+    if (!await dbContext.WorkingHourConfigs.AnyAsync())
+    {
+        // Default: 09:00 - 18:00, Mon-Fri
+        dbContext.WorkingHourConfigs.Add(new WorkingHourConfig());
+        await dbContext.SaveChangesAsync();
+    }
+
+    if (!await dbContext.SlaPolicies.AnyAsync())
+    {
+        dbContext.SlaPolicies.AddRange(
+            new SlaPolicy { Priority = TicketPriority.Low, MaxResolutionTimeMinutes = 480 * 3 },     // 3 Days
+            new SlaPolicy { Priority = TicketPriority.Medium, MaxResolutionTimeMinutes = 480 * 2 },  // 2 Days
+            new SlaPolicy { Priority = TicketPriority.High, MaxResolutionTimeMinutes = 480 },        // 1 Day (8 hours)
+            new SlaPolicy { Priority = TicketPriority.Critical, MaxResolutionTimeMinutes = 240 }     // 4 Hours
+        );
         await dbContext.SaveChangesAsync();
     }
 }

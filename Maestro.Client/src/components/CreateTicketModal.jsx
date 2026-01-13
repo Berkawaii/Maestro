@@ -1,13 +1,22 @@
 import { useState, useEffect } from 'react';
 import api from '../api';
 
-export default function CreateTicketModal({ projectId, onClose, onCreated, sprints = [] }) {
+export default function CreateTicketModal({ projectId, onClose, onCreated, sprints = [], mode = 'project' }) {
+    // mode: 'project' (Story, Task, Bug) vs 'helpdesk' (Request, Incident)
+
     const [ticket, setTicket] = useState({
         title: '',
         description: '',
         priority: 1, // Medium
-        type: 1, // Task
-        storyPoints: 1,
+        type: mode === 'project' ? 1 : 1, // Default Task (1) or Request (1) - matching enum values if possible?
+        // Let's assume:
+        // Project: 0=Story, 1=Task, 2=Bug, 3=Epic
+        // Help Desk: 1=Request, 2=Incident (reusing Type enum or need mapping?)
+        // The user said "Istek / Talep" vs "Hata / Arıza" mixed with Story/Task.
+        // Current Backend Enum: Story=0, Task=1, Bug=2, Epic=3.
+        // Let's use Task(1) for Request and Bug(2) for Incident for Help Desk mode for now.
+
+        storyPoints: mode === 'project' ? 1 : null,
         sprintId: '', // Empty = Backlog
         assigneeId: '' // Optional
     });
@@ -20,6 +29,9 @@ export default function CreateTicketModal({ projectId, onClose, onCreated, sprin
     useEffect(() => {
         // Fetch Departments
         api.get('/department').then(res => setDepartments(res.data)).catch(err => console.error(err));
+
+        // Fetch Users (for assignee)
+        api.get('/user').then(res => setUsers(res.data)).catch(err => console.error(err));
     }, []);
 
     useEffect(() => {
@@ -61,7 +73,9 @@ export default function CreateTicketModal({ projectId, onClose, onCreated, sprin
             zIndex: 1000
         }}>
             <div className="card" style={{ width: '600px', maxHeight: '90vh', overflowY: 'auto' }}>
-                <h2 style={{ marginBottom: '1.5rem' }}>Yeni Talep Oluştur</h2>
+                <h2 style={{ marginBottom: '1.5rem' }}>
+                    {mode === 'project' ? 'Create Project Issue' : 'New Support Ticket'}
+                </h2>
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
 
                     {/* Title */}
@@ -88,9 +102,19 @@ export default function CreateTicketModal({ projectId, onClose, onCreated, sprin
                             <select className="input-field"
                                 value={ticket.type} onChange={e => setTicket({ ...ticket, type: parseInt(e.target.value) })}
                             >
-                                <option value={1}>İstek / Talep</option>
-                                <option value={2}>Hata / Arıza</option>
-                                <option value={0}>Diğer</option>
+                                {mode === 'project' ? (
+                                    <>
+                                        <option value={0}>Story</option>
+                                        <option value={1}>Task</option>
+                                        <option value={2}>Bug</option>
+                                        <option value={3}>Epic</option>
+                                    </>
+                                ) : (
+                                    <>
+                                        <option value={1}>İstek / Talep (Task)</option>
+                                        <option value={2}>Hata / Arıza (Bug)</option>
+                                    </>
+                                )}
                             </select>
                         </div>
 
@@ -108,20 +132,43 @@ export default function CreateTicketModal({ projectId, onClose, onCreated, sprin
                         </div>
                     </div>
 
+                    {mode === 'project' && (
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                            {/* Story Points */}
+                            <div>
+                                <label>Story Points</label>
+                                <input type="number" className="input-field"
+                                    value={ticket.storyPoints || ''} onChange={e => setTicket({ ...ticket, storyPoints: e.target.value })}
+                                />
+                            </div>
 
+                            {/* Epic Link */}
+                            <div>
+                                <label>Epic Link</label>
+                                <select className="input-field"
+                                    value={ticket.parentId || ''} onChange={e => setTicket({ ...ticket, parentId: e.target.value })}
+                                >
+                                    <option value="">None</option>
+                                    {epics.map(e => <option key={e.id} value={e.id}>{e.ticketKey} - {e.title}</option>)}
+                                </select>
+                            </div>
+                        </div>
+                    )}
 
-                    {/* Category */}
-                    <div>
-                        <label>Kategori (Destek Alanı)</label>
-                        <select className="input-field"
-                            value={ticket.category || ''} onChange={e => setTicket({ ...ticket, category: e.target.value })}
-                        >
-                            <option value="">Seçiniz...</option>
-                            {departments.map(d => (
-                                <option key={d.id} value={d.name}>{d.name}</option>
-                            ))}
-                        </select>
-                    </div>
+                    {/* Category - Only for HelpDesk */}
+                    {mode === 'helpdesk' && (
+                        <div>
+                            <label>Kategori (Destek Alanı)</label>
+                            <select className="input-field"
+                                value={ticket.category || ''} onChange={e => setTicket({ ...ticket, category: e.target.value })}
+                            >
+                                <option value="">Seçiniz...</option>
+                                {departments.map(d => (
+                                    <option key={d.id} value={d.name}>{d.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
 
                     {/* Assignee */}
                     <div>

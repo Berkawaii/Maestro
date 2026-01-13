@@ -12,12 +12,10 @@ import Tickets from './pages/Tickets';
 import Users from './pages/Users';
 import Roles from './pages/Roles';
 import Departments from './pages/Departments';
+import SlaSettings from './pages/SlaSettings';
+import SlaReports from './pages/SlaReports';
 
-<Route path="project/:projectId" element={<ProjectLayout />}>
-  <Route path="backlog" element={<Backlog />} />
-  <Route path="board" element={<Board />} />
-  <Route path="reports" element={<Reports />} />
-</Route>
+
 
 // Protected Route Component
 function ProtectedRoute({ children }) {
@@ -54,6 +52,8 @@ function App() {
         <Route path="users" element={<Users />} />
         <Route path="roles" element={<Roles />} />
         <Route path="departments" element={<Departments />} />
+        <Route path="sla-settings" element={<SlaSettings />} />
+        <Route path="sla-reports" element={<SlaReports />} />
       </Route>
     </Routes>
   );
