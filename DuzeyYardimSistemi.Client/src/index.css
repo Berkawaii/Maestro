@@ -1,0 +1,149 @@
+:root {
+  /* Duzey Brand Colors */
+  --primary-color: #0055cc;
+  /* Duzey Blue */
+  --primary-hover: #0044a3;
+  --secondary-color: #fca311;
+  /* Complementary Orange/Yellow from logo inspiration if needed */
+
+  --bg-main: #f0f4f8;
+  --bg-card: #ffffff;
+  --bg-sidebar: #ffffff;
+  --border-color: #e2e8f0;
+
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --text-inverse: #ffffff;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.5);
+
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+
+  --transition-speed: 0.3s;
+}
+
+[data-theme='dark'] {
+  --primary-color: #3b82f6;
+  /* Lighter blue for dark mode readability */
+  --primary-hover: #2563eb;
+
+  --bg-main: #0f172a;
+  /* Slate 900 */
+  --bg-card: #1e293b;
+  /* Slate 800 */
+  --bg-sidebar: #1e293b;
+  --border-color: #334155;
+
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-inverse: #1e293b;
+
+  --glass-bg: rgba(30, 41, 59, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  transition: background-color var(--transition-speed), color var(--transition-speed);
+}
+
+/* Typography & Links */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--text-main);
+}
+
+/* Utility Classes */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1.2rem;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  font-size: 0.9rem;
+}
+
+.btn-primary {
+  background: var(--primary-color);
+  color: var(--text-inverse);
+  box-shadow: 0 4px 6px rgba(0, 85, 204, 0.2);
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  transition: background-color var(--transition-speed), border-color var(--transition-speed);
+}
+
+.input-field {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background: var(--bg-main);
+  /* Slightly darker/lighter depending on theme */
+  color: var(--text-main);
+  transition: all 0.2s;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  background: var(--bg-card);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
