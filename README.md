@@ -1,8 +1,18 @@
-# <img src="assets/logo.png" width="40" height="40" alt="Maestro Logo" style="vertical-align: middle;"> Maestro 🚀
+# <img src="assets/logo.png" width="40" height="40" alt="Maestro Logo" style="vertical-align: middle;"> Maestro 
 
 **Maestro** is a modern, premium **Agile Project Management** and **Help Desk** solution designed to streamline workflows with style and efficiency. built with .NET 8 and React (Vite).
 
 ![Maestro Demo](assets/maestro.gif)
+
+## 🌐 Live Demo
+
+Experience Maestro live in your browser:  
+👉 **[Open Maestro Demo](https://Berkawaii.github.io/Maestro/)**
+
+**Test Credentials:**
+- **Email:** `admin@duzey.com`
+- **Password:** `Password123!`
+
 
 ## ✨ Features
 
@@ -18,7 +28,7 @@
 
 ### Server (Backend)
 - **.NET 8 Web API**
-- **Entity Framework Core** (MSSQL)
+- **Entity Framework Core** (PostgreSQL)
 - **JWT Authentication**
 
 ### Client (Frontend)
@@ -32,13 +42,13 @@
 ### Prerequisites
 - .NET 8 SDK
 - Node.js (v18+)
-- SQL Server (or Docker container)
+- PostgreSQL (or Docker container)
 
 ### 1. Database Setup
 ```bash
 docker-compose up -d
 ```
-*Alternatively, update `ConnectionStrings` in `appsettings.json` to point to your local SQL Server.*
+*Alternatively, update `ConnectionStrings` in `appsettings.json` to point to your local PostgreSQL instance.*
 
 ### 2. Backend Setup
 ```bash
@@ -71,7 +81,7 @@ Maestro/
 │   │   ├── context/
 │   │   └── pages/
 │   └── ...
-└── docker-compose.yml    # SQL Server Config
+└── docker-compose.yml    # PostgreSQL Config
 ```
 
 ## 🤝 Contributing

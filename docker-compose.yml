@@ -1,15 +1,16 @@
 version: '3.8'
 services:
   db:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: duzey_sql_server
+    image: postgres:latest
+    container_name: duzey_postgres
     environment:
-      - ACCEPT_EULA=Y
-      - MSSQL_SA_PASSWORD=Duzey123!Password
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Duzey123!Password
+      POSTGRES_DB: DuzeyYardimDb
     ports:
-      - "1433:1433"
+      - "5432:5432"
     volumes:
-      - sql_data:/var/opt/mssql
+      - postgres_data:/var/lib/postgresql/data
 
 volumes:
-  sql_data:
+  postgres_data:
