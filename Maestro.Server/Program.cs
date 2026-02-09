@@ -10,6 +10,25 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 if (builder.Configuration["DatabaseProvider"] == "Postgres")
 {
+    var connectionUrl = connectionString;
+    // Render can provide either postgres:// or postgresql://
+    if (connectionUrl.StartsWith("postgres://") || connectionUrl.StartsWith("postgresql://"))
+    {
+        var databaseUri = new Uri(connectionUrl);
+        var userInfo = databaseUri.UserInfo.Split(':');
+        var builderDb = new Npgsql.NpgsqlConnectionStringBuilder
+        {
+            Host = databaseUri.Host,
+            Port = databaseUri.Port,
+            Username = userInfo[0],
+            Password = userInfo[1],
+            Database = databaseUri.LocalPath.TrimStart('/'),
+            SslMode = Npgsql.SslMode.Require,
+            TrustServerCertificate = true
+        };
+        connectionString = builderDb.ToString();
+    }
+
     builder.Services.AddDbContext<AppDbContext>(options =>
         options.UseNpgsql(connectionString));
 }
