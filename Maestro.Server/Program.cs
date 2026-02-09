@@ -8,41 +8,34 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-if (builder.Configuration["DatabaseProvider"] == "Postgres")
+
+// Render can provide either postgres:// or postgresql://
+if (connectionString.StartsWith("postgres://") || connectionString.StartsWith("postgresql://"))
 {
     var connectionUrl = connectionString;
-    // Render can provide either postgres:// or postgresql://
-    if (connectionUrl.StartsWith("postgres://") || connectionUrl.StartsWith("postgresql://"))
+    var databaseUri = new Uri(connectionUrl);
+    var userInfo = databaseUri.UserInfo.Split(':');
+    var builderDb = new Npgsql.NpgsqlConnectionStringBuilder
     {
-        var databaseUri = new Uri(connectionUrl);
-        var userInfo = databaseUri.UserInfo.Split(':');
-        var builderDb = new Npgsql.NpgsqlConnectionStringBuilder
-        {
-            Host = databaseUri.Host,
-            Port = databaseUri.Port > 0 ? databaseUri.Port : 5432,
-            Username = userInfo[0],
-            Password = userInfo[1],
-            Database = databaseUri.LocalPath.TrimStart('/'),
-            SslMode = Npgsql.SslMode.Require,
-            TrustServerCertificate = true
-        };
-        connectionString = builderDb.ToString();
-    }
-
-    builder.Services.AddDbContext<AppDbContext>(options =>
-        options.UseNpgsql(connectionString));
+        Host = databaseUri.Host,
+        Port = databaseUri.Port > 0 ? databaseUri.Port : 5432,
+        Username = userInfo[0],
+        Password = userInfo[1],
+        Database = databaseUri.LocalPath.TrimStart('/'),
+        SslMode = Npgsql.SslMode.Require,
+        TrustServerCertificate = true
+    };
+    connectionString = builderDb.ToString();
 }
-    else
-    {
-        builder.Services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlServer(connectionString));
-    }
 
-    // Suppress pending model changes warning to allow auto-migration
-    builder.Services.AddDbContext<AppDbContext>(options => {
-        options.ConfigureWarnings(warnings => 
-            warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
-    });
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(connectionString));
+
+// Suppress pending model changes warning to allow auto-migration
+builder.Services.AddDbContext<AppDbContext>(options => {
+    options.ConfigureWarnings(warnings => 
+        warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
+});
 
 builder.Services.AddCors(options =>
 {
