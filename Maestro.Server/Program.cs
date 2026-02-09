@@ -42,7 +42,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowClient", policy =>
     {
-        policy.WithOrigins("http://localhost:5173", "http://localhost:5174", "https://berkawaii.github.io")
+        policy.WithOrigins("http://localhost:5173", "http://localhost:5174", "https://berkawaii.github.io", "https://maestro-wh3k.onrender.com")
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -142,6 +142,9 @@ using (var scope = app.Services.CreateScope())
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    // Apply Migrations
+    await dbContext.Database.MigrateAsync();
 
     var roles = new[] { "Admin", "User", "Support", "SupportAdmin", "Requester" };
     foreach (var role in roles)
