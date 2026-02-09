@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace DuzeyYardimSistemi.Server.Migrations
+namespace Maestro.Server.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
@@ -33,6 +33,7 @@ namespace DuzeyYardimSistemi.Server.Migrations
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Department = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -54,6 +55,20 @@ namespace DuzeyYardimSistemi.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Departments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Departments", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Projects",
                 columns: table => new
                 {
@@ -68,6 +83,36 @@ namespace DuzeyYardimSistemi.Server.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Projects", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SlaPolicies",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Priority = table.Column<int>(type: "int", nullable: false),
+                    MaxResolutionTimeMinutes = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SlaPolicies", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "WorkingHourConfigs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    StartTime = table.Column<TimeSpan>(type: "time", nullable: false),
+                    EndTime = table.Column<TimeSpan>(type: "time", nullable: false),
+                    WorkDays = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsHolidayProcessingEnabled = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WorkingHourConfigs", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -177,6 +222,55 @@ namespace DuzeyYardimSistemi.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ProjectMembers",
+                columns: table => new
+                {
+                    MembersId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ProjectsId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectMembers", x => new { x.MembersId, x.ProjectsId });
+                    table.ForeignKey(
+                        name: "FK_ProjectMembers_AspNetUsers_MembersId",
+                        column: x => x.MembersId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProjectMembers_Projects_ProjectsId",
+                        column: x => x.ProjectsId,
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Sprints",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Goal = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsCompleted = table.Column<bool>(type: "bit", nullable: false),
+                    ProjectId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Sprints", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Sprints_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TicketStatuses",
                 columns: table => new
                 {
@@ -208,10 +302,17 @@ namespace DuzeyYardimSistemi.Server.Migrations
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Priority = table.Column<int>(type: "int", nullable: false),
+                    Type = table.Column<int>(type: "int", nullable: false),
+                    StoryPoints = table.Column<int>(type: "int", nullable: true),
+                    Label = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Category = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DueDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ResolvedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     ProjectId = table.Column<int>(type: "int", nullable: false),
+                    SprintId = table.Column<int>(type: "int", nullable: true),
+                    ParentId = table.Column<int>(type: "int", nullable: true),
                     StatusId = table.Column<int>(type: "int", nullable: true),
                     ReporterId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     AssigneeId = table.Column<string>(type: "nvarchar(450)", nullable: true)
@@ -236,10 +337,77 @@ namespace DuzeyYardimSistemi.Server.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
+                        name: "FK_Tickets_Sprints_SprintId",
+                        column: x => x.SprintId,
+                        principalTable: "Sprints",
+                        principalColumn: "Id");
+                    table.ForeignKey(
                         name: "FK_Tickets_TicketStatuses_StatusId",
                         column: x => x.StatusId,
                         principalTable: "TicketStatuses",
                         principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Tickets_Tickets_ParentId",
+                        column: x => x.ParentId,
+                        principalTable: "Tickets",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TicketComments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TicketId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TicketComments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TicketComments_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TicketComments_Tickets_TicketId",
+                        column: x => x.TicketId,
+                        principalTable: "Tickets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TicketHistories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TicketId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Field = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    OldValue = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NewValue = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ChangedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TicketHistories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TicketHistories_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_TicketHistories_Tickets_TicketId",
+                        column: x => x.TicketId,
+                        principalTable: "Tickets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -282,9 +450,44 @@ namespace DuzeyYardimSistemi.Server.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ProjectMembers_ProjectsId",
+                table: "ProjectMembers",
+                column: "ProjectsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Sprints_ProjectId",
+                table: "Sprints",
+                column: "ProjectId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TicketComments_TicketId",
+                table: "TicketComments",
+                column: "TicketId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TicketComments_UserId",
+                table: "TicketComments",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TicketHistories_TicketId",
+                table: "TicketHistories",
+                column: "TicketId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TicketHistories_UserId",
+                table: "TicketHistories",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Tickets_AssigneeId",
                 table: "Tickets",
                 column: "AssigneeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tickets_ParentId",
+                table: "Tickets",
+                column: "ParentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tickets_ProjectId",
@@ -295,6 +498,11 @@ namespace DuzeyYardimSistemi.Server.Migrations
                 name: "IX_Tickets_ReporterId",
                 table: "Tickets",
                 column: "ReporterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tickets_SprintId",
+                table: "Tickets",
+                column: "SprintId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tickets_StatusId",
@@ -326,13 +534,34 @@ namespace DuzeyYardimSistemi.Server.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Tickets");
+                name: "Departments");
+
+            migrationBuilder.DropTable(
+                name: "ProjectMembers");
+
+            migrationBuilder.DropTable(
+                name: "SlaPolicies");
+
+            migrationBuilder.DropTable(
+                name: "TicketComments");
+
+            migrationBuilder.DropTable(
+                name: "TicketHistories");
+
+            migrationBuilder.DropTable(
+                name: "WorkingHourConfigs");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
+                name: "Tickets");
+
+            migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Sprints");
 
             migrationBuilder.DropTable(
                 name: "TicketStatuses");

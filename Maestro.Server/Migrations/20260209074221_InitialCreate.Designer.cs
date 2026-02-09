@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace DuzeyYardimSistemi.Server.Migrations
+namespace Maestro.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260113092620_SyncSchema")]
-    partial class SyncSchema
+    [Migration("20260209074221_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -54,6 +54,9 @@ namespace DuzeyYardimSistemi.Server.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Department")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -116,6 +119,26 @@ namespace DuzeyYardimSistemi.Server.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("DuzeyYardimSistemi.Server.Models.Department", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Departments");
+                });
+
             modelBuilder.Entity("DuzeyYardimSistemi.Server.Models.Project", b =>
                 {
                     b.Property<int>("Id")
@@ -144,6 +167,25 @@ namespace DuzeyYardimSistemi.Server.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Projects");
+                });
+
+            modelBuilder.Entity("DuzeyYardimSistemi.Server.Models.SlaPolicy", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("MaxResolutionTimeMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SlaPolicies");
                 });
 
             modelBuilder.Entity("DuzeyYardimSistemi.Server.Models.Sprint", b =>
@@ -194,6 +236,9 @@ namespace DuzeyYardimSistemi.Server.Migrations
                     b.Property<string>("AssigneeId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("Category")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -217,6 +262,9 @@ namespace DuzeyYardimSistemi.Server.Migrations
 
                     b.Property<string>("ReporterId")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("ResolvedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<int?>("SprintId")
                         .HasColumnType("int");
@@ -350,6 +398,32 @@ namespace DuzeyYardimSistemi.Server.Migrations
                     b.HasIndex("ProjectId");
 
                     b.ToTable("TicketStatuses");
+                });
+
+            modelBuilder.Entity("DuzeyYardimSistemi.Server.Models.WorkingHourConfig", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<bool>("IsHolidayProcessingEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("time");
+
+                    b.Property<string>("WorkDays")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WorkingHourConfigs");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
