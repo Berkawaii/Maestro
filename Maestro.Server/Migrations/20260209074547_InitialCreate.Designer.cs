@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Maestro.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260209074221_InitialCreate")]
+    [Migration("20260209074547_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
