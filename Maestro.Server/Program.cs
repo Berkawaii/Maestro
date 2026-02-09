@@ -32,11 +32,17 @@ if (builder.Configuration["DatabaseProvider"] == "Postgres")
     builder.Services.AddDbContext<AppDbContext>(options =>
         options.UseNpgsql(connectionString));
 }
-else
-{
-    builder.Services.AddDbContext<AppDbContext>(options =>
-        options.UseSqlServer(connectionString));
-}
+    else
+    {
+        builder.Services.AddDbContext<AppDbContext>(options =>
+            options.UseSqlServer(connectionString));
+    }
+
+    // Suppress pending model changes warning to allow auto-migration
+    builder.Services.AddDbContext<AppDbContext>(options => {
+        options.ConfigureWarnings(warnings => 
+            warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
+    });
 
 builder.Services.AddCors(options =>
 {
